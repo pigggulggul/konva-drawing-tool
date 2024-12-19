@@ -1,9 +1,16 @@
-import { useState } from "react";
-import { SectionProp } from "../../types/type";
 import ListButton from "../common/ListButton";
 
-export default function SideBarLeft({ width }: SectionProp) {
-  const [drawingMode, setDrawingMode] = useState<number>(0);
+export type SideBarLeftProp = {
+  width: number;
+  drawingMode: number;
+  setDrawingMode: React.Dispatch<React.SetStateAction<number>>;
+};
+
+export default function SideBarLeft({
+  width,
+  drawingMode,
+  setDrawingMode,
+}: SideBarLeftProp) {
   return (
     <section
       className="h-full bg-gray-50 px-2 py-2"
