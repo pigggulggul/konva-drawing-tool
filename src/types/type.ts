@@ -6,6 +6,10 @@ export type SideBarLeftProp = {
   width: number;
   drawingMode: number;
   setDrawingMode: React.Dispatch<React.SetStateAction<number>>;
+  lineWeight: number;
+  setLineWeight: React.Dispatch<React.SetStateAction<number>>;
+  shapeColor: string;
+  setShapeColor: React.Dispatch<React.SetStateAction<string>>;
 };
 
 // 캔버스 관련 타입
@@ -17,6 +21,8 @@ export type SideBarLeftProp = {
 export type RightScreenProp = {
   width: number;
   drawingMode: number;
+  lineWeight: number;
+  shapeColor: string;
 };
 
 /** Shape x,y 좌표 */

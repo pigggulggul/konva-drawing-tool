@@ -1,3 +1,4 @@
+import { ChangeEvent } from "react";
 import { SideBarLeftProp } from "../../types/type";
 import ListButton from "../common/ListButton";
 
@@ -5,7 +6,29 @@ export default function SideBarLeft({
   width,
   drawingMode,
   setDrawingMode,
+  lineWeight,
+  setLineWeight,
+  shapeColor,
+  setShapeColor,
 }: SideBarLeftProp) {
+  const onChangeWeight = (e: ChangeEvent<HTMLInputElement>) => {
+    setLineWeight(Number(e.target.value));
+  };
+  const onBlurWeight = () => {
+    if (lineWeight < 5) {
+      setLineWeight(5);
+    } else if (lineWeight > 50) {
+      setLineWeight(50);
+    }
+  };
+  const onChangeColor = (e: ChangeEvent<HTMLInputElement>) => {
+    // 16진수만 허용하는 정규식
+    const hexColorRegex = /^[0-9A-Fa-f]{0,6}$/;
+
+    if (hexColorRegex.test(e.target.value)) {
+      setShapeColor(e.target.value);
+    }
+  };
   return (
     <section
       className="h-full bg-gray-50 px-2 py-2"
@@ -52,9 +75,17 @@ export default function SideBarLeft({
         </ul>
       </div>
       <div className="flex my-2 justify-between">
-        <p>선 두께</p>
+        <p>선 두께 (5~50)</p>
         <div className="flex justify-center items-center border color-border-main rounded-sm px-2 py-1">
-          <input className="w-20 " type="number" />
+          <input
+            className="w-12 text-center"
+            value={lineWeight}
+            type="number"
+            min={5}
+            max={50}
+            onChange={onChangeWeight}
+            onBlur={onBlurWeight}
+          />
           <p className="ms-2">px</p>
         </div>
       </div>
@@ -62,7 +93,12 @@ export default function SideBarLeft({
         <p>컬러</p>
         <div className="flex justify-center items-center border color-border-main rounded-sm px-2 py-1">
           <p className="me-2">#</p>
-          <input className="w-20 " type="text" />
+          <input
+            className="w-20 "
+            type="text"
+            value={shapeColor}
+            onChange={onChangeColor}
+          />
         </div>
       </div>
     </section>
