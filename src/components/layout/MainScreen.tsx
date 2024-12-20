@@ -9,7 +9,12 @@ import {
   RightScreenProp,
 } from "../../types/type";
 
-export default function MainScreen({ width, drawingMode }: RightScreenProp) {
+export default function MainScreen({
+  width,
+  drawingMode,
+  lineWeight,
+  shapeColor,
+}: RightScreenProp) {
   const [startLine, setStartLine] = useState<Point | null>(null);
   const [linePath, setLinePath] = useState<Point | null>(null);
 
@@ -184,7 +189,7 @@ export default function MainScreen({ width, drawingMode }: RightScreenProp) {
                 key={index}
                 points={item.points}
                 stroke="black"
-                strokeWidth={2}
+                strokeWidth={lineWeight}
               />
             );
           })}
@@ -196,9 +201,9 @@ export default function MainScreen({ width, drawingMode }: RightScreenProp) {
                 y={item.y}
                 radiusX={item.radiusX}
                 radiusY={item.radiusY}
-                fill="blue"
+                fill={"#" + shapeColor}
                 stroke="black"
-                strokeWidth={2}
+                strokeWidth={lineWeight}
               />
             );
           })}
@@ -210,9 +215,9 @@ export default function MainScreen({ width, drawingMode }: RightScreenProp) {
                 y={item.y}
                 width={item.width}
                 height={item.height}
-                fill="blue"
+                fill={"#" + shapeColor}
                 stroke="black"
-                strokeWidth={2}
+                strokeWidth={lineWeight}
               />
             );
           })}
@@ -221,33 +226,34 @@ export default function MainScreen({ width, drawingMode }: RightScreenProp) {
               <Line
                 key={index}
                 points={item.points}
-                fill="blue"
+                fill={"#" + shapeColor}
                 stroke="black"
-                strokeWidth={2}
+                strokeWidth={lineWeight}
                 closed={true}
               />
             );
           })}
 
+          {startLine && linePath && drawingMode === 1 && (
+            <Line
+              points={[startLine.x, startLine.y, linePath.x, linePath.y]}
+              stroke="black"
+              strokeWidth={lineWeight}
+            />
+          )}
           {startLine && drawingMode === 1 && (
             <Circle
               x={startLine.x}
               y={startLine.y}
               radius={4}
-              fill="blue"
+              fill={"white"}
               stroke="black"
               strokeWidth={2}
             />
           )}
-          {startLine && linePath && drawingMode === 1 && (
-            <Line
-              points={[startLine.x, startLine.y, linePath.x, linePath.y]}
-              stroke="black"
-              strokeWidth={2}
-            />
-          )}
+
           {startLine && drawingMode === 0 && (
-            <Line points={drawLines} stroke="black" strokeWidth={2} />
+            <Line points={drawLines} stroke="black" strokeWidth={lineWeight} />
           )}
           {startLine && drawingMode === 2 && circleRadius && (
             <Ellipse
@@ -255,9 +261,9 @@ export default function MainScreen({ width, drawingMode }: RightScreenProp) {
               y={startLine.y}
               radiusX={circleRadius.x}
               radiusY={circleRadius.y}
-              fill="blue"
+              fill={"#" + shapeColor}
               stroke="black"
-              strokeWidth={2}
+              strokeWidth={lineWeight}
             />
           )}
           {startLine && drawingMode === 3 && showRect && (
@@ -266,13 +272,17 @@ export default function MainScreen({ width, drawingMode }: RightScreenProp) {
               y={showRect.y}
               width={showRect.width}
               height={showRect.height}
-              fill="blue"
+              fill={"#" + shapeColor}
               stroke="black"
             />
           )}
           {startLine && drawingMode === 4 && (
             <>
-              <Line points={multiLinePath} stroke="black" strokeWidth={2} />
+              <Line
+                points={multiLinePath}
+                stroke="black"
+                strokeWidth={lineWeight}
+              />
               {Array.from(
                 { length: Math.floor(multiLinePath.length / 2) },
                 (_, index) => (
