@@ -22,6 +22,10 @@ export default function MainScreen({ width, drawingMode }: RightScreenProp) {
   const [rectangles, setRectangles] = useState<RectProps[]>([]);
   const [showRect, setShowRect] = useState<RectProps | null>(null);
 
+  const [multiLines, setMultiLines] = useState<LineProps[]>([]);
+  const [multiLinePath, setMultiLinePath] = useState<number[]>([]);
+  const [multiLineFlag, setMultiLineFlag] = useState<boolean>(false);
+
   const handleClick = (e: KonvaEventObject<MouseEvent>) => {
     //자유그리기 일 때
     if (drawingMode === 1) {
@@ -40,6 +44,28 @@ export default function MainScreen({ width, drawingMode }: RightScreenProp) {
         setLines([...lines, newLine]);
         setStartLine(null);
         setLinePath(null);
+      }
+    } else if (drawingMode === 4) {
+      const pos = e.target.getStage()?.getPointerPosition();
+      if (!pos) {
+        console.error("마우스 위치를 가져올 수 없습니다.");
+        return;
+      }
+
+      if (!startLine) {
+        setStartLine({ x: pos.x, y: pos.y });
+        setMultiLinePath([pos.x, pos.y]);
+      } else {
+        if (multiLineFlag) {
+          const newLine = {
+            points: [...multiLinePath],
+          };
+          setMultiLines([...multiLines, newLine]);
+          setMultiLinePath([]);
+          setStartLine(null);
+          setMultiLineFlag(false);
+        }
+        setMultiLinePath([...multiLinePath, pos.x, pos.y]);
       }
     }
   };
@@ -93,6 +119,16 @@ export default function MainScreen({ width, drawingMode }: RightScreenProp) {
         width: Math.abs(width),
         height: Math.abs(height),
       });
+    } else if (startLine && drawingMode === 4 && multiLinePath.length > 2) {
+      const width = Math.abs(pos.x - startLine.x);
+      const height = Math.abs(pos.y - startLine.y);
+      // 처음 점과 근접 한 곳에 있을 때
+      if (width < 5 && height < 5) {
+        console.log("감지");
+        setMultiLineFlag(true);
+      } else {
+        setMultiLineFlag(false);
+      }
     }
   };
   const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {
@@ -180,6 +216,17 @@ export default function MainScreen({ width, drawingMode }: RightScreenProp) {
               />
             );
           })}
+          {multiLines.map((item, index) => {
+            return (
+              <Line
+                key={index}
+                points={item.points}
+                stroke="black"
+                strokeWidth={2}
+                closed={true}
+              />
+            );
+          })}
 
           {startLine && drawingMode === 1 && (
             <Circle
@@ -221,6 +268,25 @@ export default function MainScreen({ width, drawingMode }: RightScreenProp) {
               fill="blue"
               stroke="black"
             />
+          )}
+          {startLine && drawingMode === 4 && (
+            <>
+              <Line points={multiLinePath} stroke="black" strokeWidth={2} />
+              {Array.from(
+                { length: Math.floor(multiLinePath.length / 2) },
+                (_, index) => (
+                  <Circle
+                    key={index}
+                    x={multiLinePath[index * 2]}
+                    y={multiLinePath[index * 2 + 1]}
+                    radius={4}
+                    fill={index === 0 && multiLineFlag ? "white" : "blue"}
+                    stroke="black"
+                    strokeWidth={2}
+                  />
+                )
+              )}
+            </>
           )}
         </Layer>
       </Stage>
