@@ -221,6 +221,7 @@ export default function MainScreen({ width, drawingMode }: RightScreenProp) {
               <Line
                 key={index}
                 points={item.points}
+                fill="blue"
                 stroke="black"
                 strokeWidth={2}
                 closed={true}
