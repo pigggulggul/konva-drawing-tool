@@ -1,13 +1,8 @@
 import { useState } from "react";
 import { KonvaEventObject } from "konva/lib/Node";
 import { Circle, Ellipse, Layer, Line, Rect, Stage } from "react-konva";
-import {
-  CircleProps,
-  LineProps,
-  Point,
-  RectProps,
-  RightScreenProp,
-} from "../../types/type";
+import { Point, RectProps, RightScreenProp } from "../../types/type";
+import { useShapeStorage } from "../../functions/shapeSetting";
 
 export default function MainScreen({
   width,
@@ -18,35 +13,32 @@ export default function MainScreen({
   const [startLine, setStartLine] = useState<Point | null>(null);
   const [linePath, setLinePath] = useState<Point | null>(null);
 
-  const [lines, setLines] = useState<LineProps[]>([]);
   const [drawLines, setDrawLines] = useState<number[]>([]);
 
-  const [circles, setCircles] = useState<CircleProps[]>([]);
   const [circleRadius, setCircleRadius] = useState<Point | null>(null);
 
-  const [rectangles, setRectangles] = useState<RectProps[]>([]);
   const [showRect, setShowRect] = useState<RectProps | null>(null);
 
-  const [multiLines, setMultiLines] = useState<LineProps[]>([]);
   const [multiLinePath, setMultiLinePath] = useState<number[]>([]);
   const [multiLineFlag, setMultiLineFlag] = useState<boolean>(false);
 
+  const shapeStorage = useShapeStorage();
+
+  //drawingMode 0: 자유그리기, 1: 직선, 2: 타원, 3: 직사각형, 4: 다각형
   const handleClick = (e: KonvaEventObject<MouseEvent>) => {
-    //자유그리기 일 때
     if (drawingMode === 1) {
       const pos = e.target.getStage()?.getPointerPosition();
       if (!pos) {
         console.error("마우스 위치를 가져올 수 없습니다.");
         return;
       }
-
       if (!startLine) {
         setStartLine({ x: pos.x, y: pos.y });
       } else {
         const newLine = {
           points: [startLine.x, startLine.y, pos.x, pos.y],
         };
-        setLines([...lines, newLine]);
+        shapeStorage.addLine(newLine.points, lineWeight);
         setStartLine(null);
         setLinePath(null);
       }
@@ -65,7 +57,7 @@ export default function MainScreen({
           const newLine = {
             points: [...multiLinePath],
           };
-          setMultiLines([...multiLines, newLine]);
+          shapeStorage.addMultiLine(newLine.points, shapeColor, lineWeight);
           setMultiLinePath([]);
           setStartLine(null);
           setMultiLineFlag(false);
@@ -83,7 +75,6 @@ export default function MainScreen({
     }
 
     if (drawingMode === 0) {
-      console.log("선그리기시작");
       if (!startLine) {
         setStartLine({ x: pos.x, y: pos.y });
         setDrawLines([pos.x, pos.y]);
@@ -129,7 +120,6 @@ export default function MainScreen({
       const height = Math.abs(pos.y - startLine.y);
       // 처음 점과 근접 한 곳에 있을 때
       if (width < 5 && height < 5) {
-        console.log("감지");
         setMultiLineFlag(true);
       } else {
         setMultiLineFlag(false);
@@ -144,9 +134,8 @@ export default function MainScreen({
     }
 
     if (drawingMode === 0) {
-      console.log("선그리기끝");
       const drawLine = drawLines;
-      setLines([...lines, { points: drawLine }]);
+      shapeStorage.addLine(drawLine, lineWeight);
       setDrawLines([]);
       setStartLine(null);
     } else if (startLine && drawingMode === 2 && circleRadius) {
@@ -156,7 +145,14 @@ export default function MainScreen({
         radiusX: circleRadius.x,
         radiusY: circleRadius.y,
       };
-      setCircles([...circles, newCircle]);
+      shapeStorage.addEllipse(
+        newCircle.x,
+        newCircle.y,
+        newCircle.radiusX,
+        newCircle.radiusY,
+        shapeColor,
+        lineWeight
+      );
       setCircleRadius(null);
       setStartLine(null);
     } else if (startLine && drawingMode === 3 && showRect) {
@@ -166,7 +162,14 @@ export default function MainScreen({
         width: showRect.width,
         height: showRect.height,
       };
-      setRectangles([...rectangles, newRect]);
+      shapeStorage.addRect(
+        newRect.x,
+        newRect.y,
+        newRect.width,
+        newRect.height,
+        shapeColor,
+        lineWeight
+      );
       setShowRect(null);
       setStartLine(null);
     }
@@ -183,55 +186,55 @@ export default function MainScreen({
         onMouseUp={handleMouseUp}
       >
         <Layer>
-          {lines.map((item, index) => {
-            return (
-              <Line
-                key={index}
-                points={item.points}
-                stroke="black"
-                strokeWidth={lineWeight}
-              />
-            );
-          })}
-          {circles.map((item, index) => {
-            return (
-              <Ellipse
-                key={index}
-                x={item.x}
-                y={item.y}
-                radiusX={item.radiusX}
-                radiusY={item.radiusY}
-                fill={"#" + shapeColor}
-                stroke="black"
-                strokeWidth={lineWeight}
-              />
-            );
-          })}
-          {rectangles.map((item, index) => {
-            return (
-              <Rect
-                key={index}
-                x={item.x}
-                y={item.y}
-                width={item.width}
-                height={item.height}
-                fill={"#" + shapeColor}
-                stroke="black"
-                strokeWidth={lineWeight}
-              />
-            );
-          })}
-          {multiLines.map((item, index) => {
-            return (
-              <Line
-                key={index}
-                points={item.points}
-                fill={"#" + shapeColor}
-                stroke="black"
-                strokeWidth={lineWeight}
-                closed={true}
-              />
-            );
+          {shapeStorage.shapes.map((item) => {
+            switch (item.type) {
+              case "Line":
+                return (
+                  <Line
+                    key={item.index}
+                    points={item.points}
+                    stroke={item.stroke}
+                    strokeWidth={item.strokeWidth}
+                  />
+                );
+              case "Ellipse":
+                return (
+                  <Ellipse
+                    key={item.index}
+                    x={item.x}
+                    y={item.y}
+                    radiusX={item.radiusX}
+                    radiusY={item.radiusY}
+                    fill={item.fill}
+                    stroke={item.stroke}
+                    strokeWidth={item.strokeWidth}
+                  />
+                );
+              case "Rect":
+                return (
+                  <Rect
+                    key={item.index}
+                    x={item.x}
+                    y={item.y}
+                    width={item.width}
+                    height={item.height}
+                    fill={item.fill}
+                    stroke={item.stroke}
+                    strokeWidth={item.strokeWidth}
+                  />
+                );
+              case "MultiLine":
+                return (
+                  <Line
+                    key={item.index}
+                    points={item.points}
+                    fill={item.fill}
+                    stroke={item.stroke}
+                    strokeWidth={item.strokeWidth}
+                    closed={item.closed}
+                  />
+                );
+            }
           })}
 
           {startLine && linePath && drawingMode === 1 && (
@@ -248,7 +251,7 @@ export default function MainScreen({
               radius={4}
               fill={"white"}
               stroke="black"
-              strokeWidth={2}
+              strokeWidth={lineWeight}
             />
           )}
 
@@ -274,6 +277,7 @@ export default function MainScreen({
               height={showRect.height}
               fill={"#" + shapeColor}
               stroke="black"
+              strokeWidth={lineWeight}
             />
           )}
           {startLine && drawingMode === 4 && (

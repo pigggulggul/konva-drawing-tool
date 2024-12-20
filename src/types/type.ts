@@ -31,19 +31,6 @@ export type Point = {
   y: number;
 };
 
-/** Line 모양 */
-export type LineProps = {
-  points: number[];
-};
-
-/** 타원  */
-export type CircleProps = {
-  x: number;
-  y: number;
-  radiusX: number;
-  radiusY: number;
-};
-
 /** 직사각형 */
 export type RectProps = {
   x: number;
@@ -51,3 +38,42 @@ export type RectProps = {
   width: number;
   height: number;
 };
+
+// 세션 스토리지에 적용할 도형들
+export interface BaseShape {
+  index: number;
+  stroke: string;
+  strokeWidth: number;
+}
+
+export interface LineShape extends BaseShape {
+  type: "Line";
+  points: number[];
+}
+
+export interface EllipseShape extends BaseShape {
+  type: "Ellipse";
+  x: number;
+  y: number;
+  radiusX: number;
+  radiusY: number;
+  fill: string;
+}
+
+export interface RectShape extends BaseShape {
+  type: "Rect";
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  fill: string;
+}
+
+export interface MultiLineShape extends BaseShape {
+  type: "MultiLine";
+  points: number[];
+  fill: string;
+  closed: boolean;
+}
+
+export type Shape = LineShape | EllipseShape | RectShape | MultiLineShape;
