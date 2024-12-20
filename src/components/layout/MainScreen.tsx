@@ -177,6 +177,29 @@ export default function MainScreen({
 
   return (
     <section className="h-full bg-blue-100" style={{ width: `${width}%` }}>
+      <div className="flex">
+        <div
+          className={`flex justify-center items-center w-10 h-10 rounded-md border border-gray-200 mx-2 cursor-pointer ${
+            shapeStorage.checkUndoSize() === false ? " bg-gray-200" : ""
+          }`}
+          onClick={() => {
+            shapeStorage.undo();
+          }}
+        >
+          {"<"}
+        </div>
+        <div
+          className={`flex justify-center items-center w-10 h-10 rounded-md border border-gray-200 mx-2 cursor-pointer ${
+            shapeStorage.checkRedoSize() === false ? " bg-gray-200" : ""
+          }`}
+          onClick={() => {
+            shapeStorage.redo();
+          }}
+        >
+          {">"}
+        </div>
+      </div>
+
       <Stage
         width={window.innerWidth}
         height={window.innerHeight}
