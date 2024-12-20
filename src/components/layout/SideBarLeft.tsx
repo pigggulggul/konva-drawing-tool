@@ -1,10 +1,5 @@
+import { SideBarLeftProp } from "../../types/type";
 import ListButton from "../common/ListButton";
-
-export type SideBarLeftProp = {
-  width: number;
-  drawingMode: number;
-  setDrawingMode: React.Dispatch<React.SetStateAction<number>>;
-};
 
 export default function SideBarLeft({
   width,
