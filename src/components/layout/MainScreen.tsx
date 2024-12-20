@@ -1,34 +1,13 @@
 import { useState } from "react";
 import { KonvaEventObject } from "konva/lib/Node";
 import { Circle, Ellipse, Layer, Line, Rect, Stage } from "react-konva";
-
-type RightScreenProp = {
-  width: number;
-  drawingMode: number;
-};
-
-type Point = {
-  x: number;
-  y: number;
-};
-
-type LineProps = {
-  points: number[];
-};
-
-type CircleProps = {
-  x: number;
-  y: number;
-  radiusX: number;
-  radiusY: number;
-};
-
-type RectProps = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
+import {
+  CircleProps,
+  LineProps,
+  Point,
+  RectProps,
+  RightScreenProp,
+} from "../../types/type";
 
 export default function MainScreen({ width, drawingMode }: RightScreenProp) {
   const [startLine, setStartLine] = useState<Point | null>(null);
