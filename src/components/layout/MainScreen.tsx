@@ -180,7 +180,7 @@ export default function MainScreen({
     <section className="h-full bg-blue-50" style={{ width: `${width}%` }}>
       <div className="h-[10%] bg-white flex items-center justify-between px-4 border-y border-gray-600">
         <div className="flex items-center">
-          <p>작업 실행: </p>
+          <p className=" select-none">작업 실행: </p>
           <div
             className={`flex justify-center items-center w-10 h-10 rounded-md border mx-2 cursor-pointer ${
               shapeStorage.checkUndoSize() === false
@@ -212,7 +212,9 @@ export default function MainScreen({
             shapeStorage.clear();
           }}
         >
-          <p className="color-text-main hover:text-white">전체 지우기</p>
+          <p className="color-text-main hover:text-white select-none">
+            전체 지우기
+          </p>
         </div>
       </div>
 
