@@ -13,7 +13,7 @@ class Deque<T> {
   private tail: number;
   private currentSize: number;
 
-  constructor(capacity: number = 100) {
+  constructor(capacity: number = 5) {
     this.items = new Array(capacity);
     this.head = 0;
     this.tail = 0;
