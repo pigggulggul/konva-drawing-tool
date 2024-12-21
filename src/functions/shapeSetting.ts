@@ -7,33 +7,97 @@ import {
   Shape,
 } from "../types/type";
 
-class Deque<Shape> {
-  private items: Shape[] = [];
+class Deque<T> {
+  private items: (T | undefined)[];
+  private head: number;
+  private tail: number;
+  private currentSize: number;
 
-  push(item: Shape) {
-    this.items.push(item);
+  constructor(capacity: number = 5) {
+    this.items = new Array(capacity);
+    this.head = 0;
+    this.tail = 0;
+    this.currentSize = 0;
   }
 
-  pop(): Shape | undefined {
-    return this.items.pop();
-  }
-  poll(): Shape | undefined {
-    return this.items.shift();
+  // 뒤에 추가 (O(1))
+  push(item: T): void {
+    if (this.currentSize === this.items.length) {
+      this.resize();
+    }
+
+    this.items[this.tail] = item;
+    this.tail = (this.tail + 1) % this.items.length;
+    this.currentSize++;
   }
 
-  peek(): Shape | undefined {
-    return this.items[this.items.length - 1];
+  // 뒤에서 제거 (O(1))
+  pop(): T | undefined {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+
+    this.tail = (this.tail - 1 + this.items.length) % this.items.length;
+    const item = this.items[this.tail];
+    this.items[this.tail] = undefined;
+    this.currentSize--;
+
+    return item;
   }
 
+  // 앞에서 제거 (O(1))
+  poll(): T | undefined {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+
+    const item = this.items[this.head];
+    this.items[this.head] = undefined;
+    this.head = (this.head + 1) % this.items.length;
+    this.currentSize--;
+
+    return item;
+  }
+
+  // 맨 뒤 요소 확인 (O(1))
+  peek(): T | undefined {
+    if (this.isEmpty()) {
+      return undefined;
+    }
+    const lastIndex = (this.tail - 1 + this.items.length) % this.items.length;
+    return this.items[lastIndex];
+  }
+
+  // 크기 반환 (O(1))
   size(): number {
-    return this.items.length;
-  }
-  isEmpty(): boolean {
-    return this.items.length === 0;
+    return this.currentSize;
   }
 
-  clear() {
-    this.items = [];
+  // 비어있는지 확인 (O(1))
+  isEmpty(): boolean {
+    return this.currentSize === 0;
+  }
+
+  // 모든 요소 제거 (O(1))
+  clear(): void {
+    this.items = new Array(this.items.length);
+    this.head = 0;
+    this.tail = 0;
+    this.currentSize = 0;
+  }
+
+  // 배열 크기 조정 (필요할 때만 O(n))
+  private resize(): void {
+    const newCapacity = this.items.length * 2;
+    const newItems = new Array(newCapacity);
+
+    for (let i = 0; i < this.currentSize; i++) {
+      newItems[i] = this.items[(this.head + i) % this.items.length];
+    }
+
+    this.items = newItems;
+    this.head = 0;
+    this.tail = this.currentSize;
   }
 }
 
@@ -181,6 +245,15 @@ export const useShapeStorage = () => {
     return redoStack.isEmpty() ? false : true;
   };
 
+  const clear = () => {
+    setShapes([]);
+
+    undoStack.clear();
+    redoStack.clear();
+
+    sessionStorage.removeItem("shapes");
+  };
+
   return {
     shapes,
     addLine,
@@ -191,5 +264,6 @@ export const useShapeStorage = () => {
     redo,
     checkUndoSize,
     checkRedoSize,
+    clear,
   };
 };
