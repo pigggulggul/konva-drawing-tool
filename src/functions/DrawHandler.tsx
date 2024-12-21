@@ -15,52 +15,11 @@ export const DrawHandler = (
   const [showRect, setShowRect] = useState<RectProps | null>(null);
   const [multiLinePath, setMultiLinePath] = useState<number[]>([]);
   const [multiLineFlag, setMultiLineFlag] = useState<boolean>(false);
+  const [polygonPath, setPolygonPath] = useState<Point | null>(null);
 
   const shapeStorage = useShapeStorage();
 
   //drawingMode 0: 자유그리기, 1: 직선, 2: 타원, 3: 직사각형, 4: 다각형
-  const handleClick = (e: KonvaEventObject<MouseEvent>) => {
-    if (drawingMode === 1) {
-      const pos = e.target.getStage()?.getPointerPosition();
-      if (!pos) {
-        console.error("마우스 위치를 가져올 수 없습니다.");
-        return;
-      }
-      if (!startLine) {
-        setStartLine({ x: pos.x, y: pos.y });
-      } else {
-        const newLine = {
-          points: [startLine.x, startLine.y, pos.x, pos.y],
-        };
-        shapeStorage.addLine(newLine.points, lineWeight);
-        setStartLine(null);
-        setLinePath(null);
-      }
-    } else if (drawingMode === 4) {
-      const pos = e.target.getStage()?.getPointerPosition();
-      if (!pos) {
-        console.error("마우스 위치를 가져올 수 없습니다.");
-        return;
-      }
-
-      if (!startLine) {
-        setStartLine({ x: pos.x, y: pos.y });
-        setMultiLinePath([pos.x, pos.y]);
-      } else {
-        if (multiLineFlag) {
-          const newLine = {
-            points: [...multiLinePath],
-          };
-          shapeStorage.addMultiLine(newLine.points, shapeColor, lineWeight);
-          setMultiLinePath([]);
-          setStartLine(null);
-          setMultiLineFlag(false);
-        }
-        setMultiLinePath([...multiLinePath, pos.x, pos.y]);
-      }
-    }
-  };
-
   const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
     const pos = e.target.getStage()?.getPointerPosition();
     if (!pos) {
@@ -108,7 +67,8 @@ export const DrawHandler = (
         width: Math.abs(width),
         height: Math.abs(height),
       });
-    } else if (startLine && drawingMode === 4 && multiLinePath.length > 2) {
+    } else if (startLine && drawingMode === 4) {
+      setLinePath({ x: pos.x, y: pos.y });
       const width = Math.abs(pos.x - startLine.x);
       const height = Math.abs(pos.y - startLine.y);
       // 처음 점과 근접 한 곳에 있을 때
@@ -132,6 +92,22 @@ export const DrawHandler = (
       shapeStorage.addLine(drawLine, lineWeight);
       setDrawLines([]);
       setStartLine(null);
+    } else if (drawingMode === 1) {
+      const pos = e.target.getStage()?.getPointerPosition();
+      if (!pos) {
+        console.error("마우스 위치를 가져올 수 없습니다.");
+        return;
+      }
+      if (!startLine) {
+        setStartLine({ x: pos.x, y: pos.y });
+      } else {
+        const newLine = {
+          points: [startLine.x, startLine.y, pos.x, pos.y],
+        };
+        shapeStorage.addLine(newLine.points, lineWeight);
+        setStartLine(null);
+        setLinePath(null);
+      }
     } else if (startLine && drawingMode === 2 && circleRadius) {
       const newCircle = {
         x: startLine.x,
@@ -166,6 +142,33 @@ export const DrawHandler = (
       );
       setShowRect(null);
       setStartLine(null);
+    } else if (drawingMode === 4) {
+      const pos = e.target.getStage()?.getPointerPosition();
+      if (!pos) {
+        console.error("마우스 위치를 가져올 수 없습니다.");
+        return;
+      }
+
+      if (!startLine) {
+        setStartLine({ x: pos.x, y: pos.y });
+        setMultiLinePath([pos.x, pos.y]);
+        setPolygonPath({ x: pos.x, y: pos.y });
+        setLinePath({ x: pos.x, y: pos.y });
+      } else {
+        if (multiLineFlag) {
+          const newLine = {
+            points: [...multiLinePath],
+          };
+          shapeStorage.addMultiLine(newLine.points, shapeColor, lineWeight);
+          setMultiLinePath([]);
+          setStartLine(null);
+          setMultiLineFlag(false);
+          setPolygonPath(null);
+          setLinePath(null);
+        }
+        setMultiLinePath([...multiLinePath, pos.x, pos.y]);
+        setPolygonPath({ x: pos.x, y: pos.y });
+      }
     }
   };
 
@@ -178,7 +181,7 @@ export const DrawHandler = (
     showRect,
     multiLinePath,
     multiLineFlag,
-    handleClick,
+    polygonPath,
     handleMouseDown,
     handleMouseMove,
     handleMouseUp,
