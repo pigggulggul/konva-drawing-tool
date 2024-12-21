@@ -93,7 +93,7 @@ export const Icon = ({ name, size = 24, color = "#000000" }: IconProps) => {
           />
         </svg>
       );
-    case "redo":
+    case "undo":
       return (
         <svg
           fill={color}
@@ -119,7 +119,7 @@ export const Icon = ({ name, size = 24, color = "#000000" }: IconProps) => {
           </g>
         </svg>
       );
-    case "undo":
+    case "redo":
       return (
         <svg
           fill={color}

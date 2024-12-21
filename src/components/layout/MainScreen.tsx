@@ -3,7 +3,8 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { Circle, Ellipse, Layer, Line, Rect, Stage } from "react-konva";
 import { Point, RectProps, RightScreenProp } from "../../types/type";
 import { useShapeStorage } from "../../functions/shapeSetting";
-import { Icon } from "../icons/Icon";
+import UndoButton from "../common/UndoButton";
+import RedoButton from "../common/RedoButton";
 
 export default function MainScreen({
   width,
@@ -181,30 +182,18 @@ export default function MainScreen({
       <div className="h-[10%] bg-white flex items-center justify-between px-4 border-y border-gray-600">
         <div className="flex items-center">
           <p className=" select-none">작업 실행: </p>
-          <div
-            className={`flex justify-center items-center w-10 h-10 rounded-md border mx-2 cursor-pointer ${
-              shapeStorage.checkUndoSize() === false
-                ? " bg-gray-200"
-                : "border-gray-200 color-border-main"
-            }`}
+          <UndoButton
+            checkUndo={shapeStorage.checkUndoSize()}
             onClick={() => {
               shapeStorage.undo();
             }}
-          >
-            <Icon name="redo" />
-          </div>
-          <div
-            className={`flex justify-center items-center w-10 h-10 rounded-md border mx-2 cursor-pointer ${
-              shapeStorage.checkRedoSize() === false
-                ? " bg-gray-200"
-                : "border-gray-200 color-border-main"
-            }`}
+          />
+          <RedoButton
+            checkRedo={shapeStorage.checkRedoSize()}
             onClick={() => {
               shapeStorage.redo();
             }}
-          >
-            <Icon name="undo" />
-          </div>
+          />
         </div>
         <div
           className=" color-border-main border-2 rounded-sm p-2 cursor-pointer hover:color-bg-main"
