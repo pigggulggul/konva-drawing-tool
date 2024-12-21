@@ -19,7 +19,7 @@ export default function MainScreen({
     showRect,
     multiLinePath,
     multiLineFlag,
-    handleClick,
+    polygonPath,
     handleMouseDown,
     handleMouseMove,
     handleMouseUp,
@@ -58,7 +58,6 @@ export default function MainScreen({
       <Stage
         width={(window.innerWidth * width) / 100}
         height={window.innerHeight * 0.9}
-        onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
@@ -118,6 +117,13 @@ export default function MainScreen({
           {startLine && linePath && drawingMode === 1 && (
             <Line
               points={[startLine.x, startLine.y, linePath.x, linePath.y]}
+              stroke="black"
+              strokeWidth={lineWeight}
+            />
+          )}
+          {startLine && linePath && polygonPath && drawingMode === 4 && (
+            <Line
+              points={[polygonPath.x, polygonPath.y, linePath.x, linePath.y]}
               stroke="black"
               strokeWidth={lineWeight}
             />
