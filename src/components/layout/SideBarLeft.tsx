@@ -29,20 +29,22 @@ export default function SideBarLeft({
       setShapeColor(e.target.value);
     }
   };
+
   return (
     <section
-      className="h-full bg-gray-50 px-2 py-2"
+      className="h-full bg-white px-2 py-2 border border-gray-600"
       style={{ width: `${width}%` }}
     >
       <div>
-        <p>드로잉 타입</p>
-        <ul className="flex my-2">
+        <p className="m-2 text-md font-bold">드로잉 타입</p>
+        <ul className="flex flex-col">
           <ListButton
             text="자유 그리기"
             onClick={() => {
               setDrawingMode(0);
             }}
             isSelected={drawingMode === 0}
+            icon="draw"
           />
           <ListButton
             text="직선"
@@ -50,6 +52,7 @@ export default function SideBarLeft({
               setDrawingMode(1);
             }}
             isSelected={drawingMode === 1}
+            icon="line"
           />
           <ListButton
             text="타원"
@@ -57,6 +60,7 @@ export default function SideBarLeft({
               setDrawingMode(2);
             }}
             isSelected={drawingMode === 2}
+            icon="ellipse"
           />
           <ListButton
             text="직사각형"
@@ -64,6 +68,7 @@ export default function SideBarLeft({
               setDrawingMode(3);
             }}
             isSelected={drawingMode === 3}
+            icon="rectangle"
           />
           <ListButton
             text="다각형"
@@ -71,12 +76,13 @@ export default function SideBarLeft({
               setDrawingMode(4);
             }}
             isSelected={drawingMode === 4}
+            icon="polygon"
           />
         </ul>
       </div>
-      <div className="flex my-2 justify-between">
-        <p>선 두께 (5~50)</p>
-        <div className="flex justify-center items-center border color-border-main rounded-sm px-2 py-1">
+      <div className="flex my-3 justify-between">
+        <p className="m-2 text-md font-bold">선 두께 (5~50)</p>
+        <div className="flex justify-center items-center border-2 color-border-main rounded-sm px-2 py-1">
           <input
             className="w-12 text-center"
             value={lineWeight}
@@ -89,12 +95,16 @@ export default function SideBarLeft({
           <p className="ms-2">px</p>
         </div>
       </div>
-      <div className="flex my-2 justify-between">
-        <p>컬러</p>
-        <div className="flex justify-center items-center border color-border-main rounded-sm px-2 py-1">
-          <p className="me-2">#</p>
+      <div className="flex my-3 justify-between">
+        <p className="m-2 text-md font-bold">컬러</p>
+        <div className="flex justify-center items-center border-2 color-border-main rounded-sm px-2 py-1">
+          <div
+            className="w-4 h-4 me-2"
+            style={{ backgroundColor: `#${shapeColor}` }}
+          />
+          <p className="me-1">#</p>
           <input
-            className="w-20 "
+            className="w-16 "
             type="text"
             value={shapeColor}
             onChange={onChangeColor}

@@ -181,6 +181,15 @@ export const useShapeStorage = () => {
     return redoStack.isEmpty() ? false : true;
   };
 
+  const clear = () => {
+    setShapes([]);
+
+    undoStack.clear();
+    redoStack.clear();
+
+    sessionStorage.removeItem("shapes");
+  };
+
   return {
     shapes,
     addLine,
@@ -191,5 +200,6 @@ export const useShapeStorage = () => {
     redo,
     checkUndoSize,
     checkRedoSize,
+    clear,
   };
 };

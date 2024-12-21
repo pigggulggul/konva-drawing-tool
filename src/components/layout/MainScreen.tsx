@@ -3,6 +3,7 @@ import { KonvaEventObject } from "konva/lib/Node";
 import { Circle, Ellipse, Layer, Line, Rect, Stage } from "react-konva";
 import { Point, RectProps, RightScreenProp } from "../../types/type";
 import { useShapeStorage } from "../../functions/shapeSetting";
+import { Icon } from "../icons/Icon";
 
 export default function MainScreen({
   width,
@@ -176,33 +177,48 @@ export default function MainScreen({
   };
 
   return (
-    <section className="h-full bg-blue-100" style={{ width: `${width}%` }}>
-      <div className="flex">
-        <div
-          className={`flex justify-center items-center w-10 h-10 rounded-md border border-gray-200 mx-2 cursor-pointer ${
-            shapeStorage.checkUndoSize() === false ? " bg-gray-200" : ""
-          }`}
-          onClick={() => {
-            shapeStorage.undo();
-          }}
-        >
-          {"<"}
+    <section className="h-full bg-blue-50" style={{ width: `${width}%` }}>
+      <div className="h-[10%] bg-white flex items-center justify-between px-4 border-y border-gray-600">
+        <div className="flex items-center">
+          <p>작업 실행: </p>
+          <div
+            className={`flex justify-center items-center w-10 h-10 rounded-md border mx-2 cursor-pointer ${
+              shapeStorage.checkUndoSize() === false
+                ? " bg-gray-200"
+                : "border-gray-200 color-border-main"
+            }`}
+            onClick={() => {
+              shapeStorage.undo();
+            }}
+          >
+            <Icon name="redo" />
+          </div>
+          <div
+            className={`flex justify-center items-center w-10 h-10 rounded-md border mx-2 cursor-pointer ${
+              shapeStorage.checkRedoSize() === false
+                ? " bg-gray-200"
+                : "border-gray-200 color-border-main"
+            }`}
+            onClick={() => {
+              shapeStorage.redo();
+            }}
+          >
+            <Icon name="undo" />
+          </div>
         </div>
         <div
-          className={`flex justify-center items-center w-10 h-10 rounded-md border border-gray-200 mx-2 cursor-pointer ${
-            shapeStorage.checkRedoSize() === false ? " bg-gray-200" : ""
-          }`}
+          className=" color-border-main border-2 rounded-sm p-2 cursor-pointer hover:color-bg-main"
           onClick={() => {
-            shapeStorage.redo();
+            shapeStorage.clear();
           }}
         >
-          {">"}
+          <p className="color-text-main hover:text-white">전체 지우기</p>
         </div>
       </div>
 
       <Stage
-        width={window.innerWidth}
-        height={window.innerHeight}
+        width={(window.innerWidth * width) / 100}
+        height={window.innerHeight * 0.9}
         onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseDown={handleMouseDown}
